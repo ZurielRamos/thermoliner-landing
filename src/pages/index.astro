@@ -1,0 +1,1731 @@
+---
+import { Image } from "astro:assets";
+import logoDesktop from "../assets/logo_desktop.png";
+import asiento1 from "../assets/asiento_1.png";
+import asiento2 from "../assets/asiento_2.png";
+import background1 from "../assets/background_1.png";
+import background2 from "../assets/background_2.png";
+
+// Diccionario de traducciones (se sirve al cliente para el cambio de idioma)
+const i18n = {
+  es: {
+    langLabel: "ES",
+    links: "Otros Enlaces",
+    linksItems: [
+      { label: "Sobre la empresa", href: "#" },
+      { label: "Tecnología Thermoliner", href: "#" },
+      { label: "Distribuidores", href: "#" },
+      { label: "Soporte", href: "#" },
+      { label: "Contacto", href: "#" },
+    ],
+    left: {
+      eyebrow: "Tecnología Thermoliner",
+      title: "Asientos para Motos",
+      text: 'Asientos para <strong>moto</strong> con tecnología <strong class="accent">Thermoliner</strong>, que reduce la temperatura de la superficie <strong class="accent">hasta un 30%</strong>. Más confort en cada trayecto, incluso bajo el sol. Descubre la línea pensada para tu <strong>moto</strong> y entra a la tienda.',
+      cta: "Entrar a la tienda de moto",
+    },
+    right: {
+      eyebrow: "Tecnología Thermoliner",
+      title: "Asientos Utilitarios",
+      text: 'Asientos para <strong>landmowers</strong> y <strong>vehículos utilitarios</strong>, equipados con tecnología <strong class="accent">Thermoliner</strong> que baja la temperatura <strong class="accent">hasta un 30%</strong>. Jornadas largas de trabajo con el máximo confort y resistencia. Entra a la tienda para tu <strong>vehículo utilitario</strong>.',
+      cta: "Entrar a la tienda utilitaria",
+    },
+    modal: {
+      eyebrow: "Selecciona tu región",
+      titleMoto: "Tienda de Motos",
+      titleUtil: "Tienda Utilitaria",
+      subtitle: "Elige tu región y luego tu país para llevarte a la tienda correcta.",
+      selectRegion: "Selecciona una región",
+      selectCountry: "Selecciona tu país",
+      back: "Volver a regiones",
+      selected: "País seleccionado",
+      none: "Ningún país seleccionado",
+      cta: "Ir a la tienda",
+      close: "Cerrar",
+      regions: {
+        na: "Norteamérica",
+        latam: "Latinoamérica",
+        eu: "Europa",
+      },
+    },
+  },
+  en: {
+    langLabel: "EN",
+    links: "Other Links",
+    linksItems: [
+      { label: "About us", href: "#" },
+      { label: "Thermoliner Technology", href: "#" },
+      { label: "Dealers", href: "#" },
+      { label: "Support", href: "#" },
+      { label: "Contact", href: "#" },
+    ],
+    left: {
+      eyebrow: "Thermoliner Technology",
+      title: "Motorcycle Seats",
+      text: '<strong>Motorcycle</strong> seats featuring <strong class="accent">Thermoliner</strong> technology, which lowers the surface temperature by <strong class="accent">up to 30%</strong>. More comfort on every ride, even under the sun. Discover the line built for your <strong>motorcycle</strong> and enter the store.',
+      cta: "Enter the motorcycle store",
+    },
+    right: {
+      eyebrow: "Thermoliner Technology",
+      title: "Utility Seats",
+      text: 'Seats for <strong>landmowers</strong> and <strong>utility vehicles</strong>, equipped with <strong class="accent">Thermoliner</strong> technology that lowers the temperature <strong class="accent">by up to 30%</strong>. Long work shifts with maximum comfort and durability. Enter the store for your <strong>utility vehicle</strong>.',
+      cta: "Enter the utility store",
+    },
+    modal: {
+      eyebrow: "Select your region",
+      titleMoto: "Motorcycle Store",
+      titleUtil: "Utility Store",
+      subtitle: "Pick your region and then your country to take you to the right store.",
+      selectRegion: "Select a region",
+      selectCountry: "Select your country",
+      back: "Back to regions",
+      selected: "Selected country",
+      none: "No country selected",
+      cta: "Go to store",
+      close: "Close",
+      regions: {
+        na: "North America",
+        latam: "Latin America",
+        eu: "Europe",
+      },
+    },
+  },
+};
+
+// Idioma por defecto para el render inicial (SSG)
+const t = i18n.es;
+---
+
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <title>Thermoliner Seats</title>
+    <!-- jsVectorMap: mapa mundial interactivo -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jsvectormap@1.7.0/dist/jsvectormap.min.css" />
+    <script is:inline src="https://cdn.jsdelivr.net/npm/jsvectormap@1.7.0/dist/jsvectormap.min.js"></script>
+    <script is:inline src="https://cdn.jsdelivr.net/npm/jsvectormap@1.7.0/dist/maps/world.js"></script>
+  </head>
+  <body>
+    <main class="landing">
+      <!-- Header global -->
+      <header class="topbar">
+        <a href="/" class="logo" aria-label="Thermoliner Seats">
+          <Image src={logoDesktop} alt="Thermoliner Seats" widths={[220, 320]} sizes="220px" />
+        </a>
+        <nav class="actions">
+          <!-- Dropdown de enlaces -->
+          <div class="menu" data-menu="links">
+            <button type="button" class="pill" aria-haspopup="true" aria-expanded="false" data-menu-toggle>
+              <span data-i18n="links">{t.links}</span>
+              <svg class="pill__caret" width="10" height="6" viewBox="0 0 10 6" aria-hidden="true">
+                <path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <ul class="dropdown" role="menu" data-links-list>
+              {t.linksItems.map((item) => (
+                <li role="none"><a role="menuitem" href={item.href}>{item.label}</a></li>
+              ))}
+            </ul>
+          </div>
+
+          <!-- Selector de idioma -->
+          <div class="menu" data-menu="lang">
+            <button type="button" class="pill" aria-haspopup="true" aria-expanded="false" aria-label="Cambiar idioma" data-menu-toggle>
+              <span data-lang-label>{t.langLabel}</span>
+              <svg class="pill__caret" width="10" height="6" viewBox="0 0 10 6" aria-hidden="true">
+                <path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <ul class="dropdown dropdown--lang" role="menu">
+              <li role="none"><button role="menuitem" type="button" class="lang-option" data-lang="es">Español</button></li>
+              <li role="none"><button role="menuitem" type="button" class="lang-option" data-lang="en">English</button></li>
+            </ul>
+          </div>
+        </nav>
+      </header>
+
+      <!-- Panel izquierdo -->
+      <section class="panel panel--left">
+        <Image class="panel__bg" src={background1} alt="" widths={[720, 1080]} sizes="50vw" />
+        <span class="panel__overlay" aria-hidden="true"></span>
+        <div class="panel__content">
+          <hgroup class="panel__heading panel__heading--left">
+            <p class="panel__eyebrow" data-i18n="left.eyebrow">{t.left.eyebrow}</p>
+            <h1 class="panel__title panel__title--left" data-i18n="left.title">{t.left.title}</h1>
+          </hgroup>
+          <Image class="panel__product panel__product--left" src={asiento1} alt="Asiento de moto con tecnología Thermoliner" widths={[520, 780]} sizes="(max-width: 900px) 90vw, 45vw" />
+          <p class="panel__text panel__text--left" data-i18n-html="left.text" set:html={t.left.text}></p>
+          <a href="#" class="cta" data-i18n="left.cta" data-open-store="moto">{t.left.cta}</a>
+        </div>
+      </section>
+
+      <!-- Panel derecho -->
+      <section class="panel panel--right">
+        <Image class="panel__bg" src={background2} alt="" widths={[720, 1080]} sizes="50vw" />
+        <span class="panel__overlay" aria-hidden="true"></span>
+        <div class="panel__content">
+          <div class="panel__copy">
+            <p class="panel__eyebrow" data-i18n="right.eyebrow">{t.right.eyebrow}</p>
+            <h2 class="panel__title panel__title--right" data-i18n="right.title">{t.right.title}</h2>
+            <p class="panel__text panel__text--right" data-i18n-html="right.text" set:html={t.right.text}></p>
+          </div>
+          <Image class="panel__product panel__product--right" src={asiento2} alt="Asiento para vehículo utilitario con tecnología Thermoliner" widths={[520, 780]} sizes="(max-width: 900px) 90vw, 45vw" />
+          <a href="#" class="cta" data-i18n="right.cta" data-open-store="util">{t.right.cta}</a>
+        </div>
+      </section>
+
+      <!-- Divisor central -->
+      <div class="divider" aria-hidden="true">
+        <span class="divider__star"></span>
+      </div>
+    </main>
+
+    <!-- Modal selección de región -->
+    <div class="modal" data-modal hidden aria-hidden="true">
+      <div class="modal__overlay" data-modal-close></div>
+      <div class="modal__dialog" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+        <button type="button" class="modal__close" data-modal-close aria-label="Cerrar" data-modal-close-label>&times;</button>
+
+        <div class="modal__head">
+          <p class="modal__eyebrow" data-i18n="modal.eyebrow">{t.modal.eyebrow}</p>
+          <h2 class="modal__title" id="modal-title" data-modal-title>{t.modal.titleMoto}</h2>
+          <p class="modal__subtitle" data-i18n="modal.subtitle">{t.modal.subtitle}</p>
+        </div>
+
+        <div class="modal__body">
+          <!-- Mapa mundial interactivo (jsVectorMap) -->
+          <div class="modal__map">
+            <div class="worldmap" data-worldmap></div>
+          </div>
+
+          <!-- Panel de selección (regiones -> países) -->
+          <div class="modal__side">
+            <div class="list-head">
+              <button type="button" class="list-back" data-list-back hidden>
+                <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <span data-back-label>{t.modal.back}</span>
+              </button>
+              <p class="list-head__title" data-list-title>{t.modal.selectRegion}</p>
+            </div>
+
+            <ul class="region-list" role="listbox" aria-label="Selección" data-select-list></ul>
+
+            <div class="modal__footer">
+              <p class="modal__picked">
+                <span class="modal__picked-label">{t.modal.none}</span>
+                <span class="modal__picked-value" data-picked-value></span>
+              </p>
+              <a class="cta modal__cta" data-modal-go href="#" aria-disabled="true">
+                <span data-i18n="modal.cta">{t.modal.cta}</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cursor personalizado: anillo (honda) + punto -->
+    <div class="cursor" aria-hidden="true">
+      <span class="cursor__ring"></span>
+      <span class="cursor__dot"></span>
+    </div>
+
+    <!-- Datos de traducción para el cambio de idioma en cliente -->
+    <script type="application/json" id="i18n-data" set:html={JSON.stringify(i18n)}></script>
+  </body>
+</html>
+
+<style>
+  :root {
+    --accent: #f24b28;
+    --text: #ffffff;
+    --text-muted: #c7cdd6;
+    /* Alto real del viewport: se recalcula por JS con fallback a 1vh */
+    --vh: 1vh;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    background: #0d1117;
+    color: var(--text);
+    font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+    overflow: hidden;
+  }
+
+  .landing {
+    position: relative;
+    display: flex;
+    height: 100vh;
+    height: calc(var(--vh, 1vh) * 100);
+    height: 100dvh;
+    width: 100%;
+    overflow: hidden;
+  }
+
+  /* ---------- Header ---------- */
+  .topbar {
+    position: absolute;
+    inset: 0 0 auto 0;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: clamp(0.8rem, 2.4vh, 1.6rem) clamp(1.2rem, 3vw, 2.5rem);
+    pointer-events: none;
+  }
+
+  .logo,
+  .actions {
+    pointer-events: auto;
+  }
+
+  .logo img {
+    display: block;
+    height: clamp(22px, 4.2vh, 38px);
+    width: auto;
+  }
+
+  .actions {
+    display: flex;
+    gap: clamp(0.4rem, 1vw, 0.75rem);
+  }
+
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    padding: clamp(0.4rem, 1.1vh, 0.6rem) clamp(0.9rem, 1.6vw, 1.3rem);
+    border: none;
+    border-radius: 999px;
+    background: #f2efe9;
+    color: #1a1f26;
+    font-size: clamp(0.75rem, 1.6vh, 0.9rem);
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.2s ease, transform 0.2s ease;
+  }
+
+  .pill:hover {
+    background: #ffffff;
+    transform: translateY(-1px);
+  }
+
+  .pill {
+    gap: 0.45rem;
+  }
+
+  .pill__caret {
+    transition: transform 0.25s ease;
+  }
+
+  .menu[data-open="true"] .pill__caret {
+    transform: rotate(180deg);
+  }
+
+  /* ---------- Menú desplegable ---------- */
+  .menu {
+    position: relative;
+  }
+
+  .dropdown {
+    position: absolute;
+    top: calc(100% + 0.55rem);
+    right: 0;
+    min-width: 220px;
+    margin: 0;
+    padding: 0.4rem;
+    list-style: none;
+    background: #ffffff;
+    border-radius: 14px;
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+    opacity: 0;
+    transform: translateY(-8px) scale(0.98);
+    transform-origin: top right;
+    pointer-events: none;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    z-index: 30;
+  }
+
+  .dropdown--lang {
+    min-width: 150px;
+  }
+
+  .menu[data-open="true"] .dropdown {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+  }
+
+  .dropdown :global(li) {
+    margin: 0;
+    list-style: none;
+  }
+
+  .dropdown :global(a),
+  .dropdown :global(.lang-option) {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    width: 100%;
+    padding: 0.7rem 0.9rem;
+    border: none;
+    border-radius: 10px;
+    background: transparent;
+    color: #1a1f26;
+    font-family: inherit;
+    font-size: 0.9rem;
+    font-weight: 600;
+    line-height: 1.2;
+    text-align: left;
+    text-decoration: none;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background 0.18s ease, color 0.18s ease, padding-left 0.18s ease;
+  }
+
+  .dropdown :global(a:hover),
+  .dropdown :global(.lang-option:hover) {
+    background: #f4f1ea;
+    color: #000000;
+    padding-left: 1.1rem;
+  }
+
+  /* Separadores sutiles entre elementos (menos el último) */
+  .dropdown :global(li:not(:last-child) a),
+  .dropdown :global(li:not(:last-child) .lang-option) {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    border-radius: 0;
+  }
+
+  .dropdown :global(li:not(:last-child) a:hover),
+  .dropdown :global(li:not(:last-child) .lang-option:hover) {
+    border-radius: 10px;
+  }
+
+  .dropdown :global(.lang-option[aria-current="true"]) {
+    color: var(--accent);
+  }
+
+  /* ---------- Paneles ---------- */
+  .panel {
+    position: relative;
+    flex: 1 1 50%;
+    min-height: 0;
+    overflow: hidden;
+    transition: flex-grow 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  /* Estado activo / inactivo */
+  .panel.is-active {
+    flex-grow: 1.12;
+  }
+
+  .panel.is-inactive {
+    flex-grow: 0.88;
+  }
+
+  .panel__overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+    background: #05070b;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.6s ease;
+  }
+
+  .panel.is-inactive .panel__overlay {
+    opacity: 0.42;
+  }
+
+  .panel__bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+    transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .panel.is-active .panel__bg {
+    transform: scale(1.04);
+  }
+
+  /* --- Cambios sutiles de imagen y texto según activo/inactivo --- */
+
+  /* Activo: la imagen se agranda un poco y se realza */
+  .panel.is-active .panel__product {
+    transform: scale(1.06);
+    filter: drop-shadow(0 34px 46px rgba(0, 0, 0, 0.6)) brightness(1.04);
+  }
+
+  .panel.is-active .panel__eyebrow,
+  .panel.is-active .panel__title,
+  .panel.is-active .panel__text {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* En la sección activa, el botón se vuelve blanco con texto oscuro */
+  .panel.is-active .cta {
+    background: #ffffff;
+    border-color: #ffffff;
+    color: #12161c;
+  }
+
+  .panel.is-active .cta:hover {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #ffffff;
+  }
+
+  /* Inactivo: imagen ligeramente reducida y texto atenuado que sube apenas */
+  .panel.is-inactive .panel__product {
+    transform: scale(0.94);
+    filter: drop-shadow(0 20px 30px rgba(0, 0, 0, 0.45)) brightness(0.9) saturate(0.9);
+  }
+
+  .panel.is-inactive .panel__eyebrow {
+    opacity: 0.55;
+    transform: translateY(-4px);
+  }
+
+  .panel.is-inactive .panel__title {
+    opacity: 0.72;
+    transform: translateY(-4px);
+  }
+
+  .panel.is-inactive .panel__text {
+    opacity: 0.55;
+    transform: translateY(4px);
+  }
+
+  .panel__content {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    height: 100%;
+    display: grid;
+    padding: clamp(3.5rem, 9vh, 6rem) clamp(2rem, 4vw, 4rem) clamp(2rem, 5vh, 3.5rem);
+  }
+
+  /* Panel izquierdo: título, imagen y texto agrupados y centrados
+     (título cerca del asiento por arriba, texto cerca por abajo),
+     botón anclado abajo (ancho). */
+  .panel--left .panel__content {
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr auto auto auto 1fr auto;
+    grid-template-areas:
+      "."
+      "title"
+      "product"
+      "text"
+      "."
+      "cta";
+    row-gap: clamp(0.5rem, 1.6vh, 1rem);
+    justify-items: start;
+    text-align: left;
+  }
+
+  /* Panel derecho: copy (izquierda) e imagen (derecha) en la MISMA banda,
+     título arriba en una sola línea, botón anclado abajo (ancho). */
+  .panel--right .panel__content {
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    grid-template-rows: 1fr auto;
+    grid-template-areas:
+      "copy    product"
+      "cta     cta";
+    column-gap: clamp(0.5rem, 2vw, 1.5rem);
+    row-gap: clamp(0.8rem, 2.5vh, 1.6rem);
+    align-items: center;
+    text-align: left;
+  }
+
+  /* Bloque de encabezado (eyebrow + título) del panel izquierdo */
+  .panel__heading--left {
+    grid-area: title;
+    margin: 0;
+    justify-self: end;
+    text-align: right;
+    max-width: 72%;
+  }
+
+  /* Subtítulo (eyebrow) sobre el título */
+  .panel__eyebrow {
+    margin: 0 0 clamp(0.35rem, 1.1vh, 0.7rem);
+    font-size: clamp(0.68rem, 1.5vh, 0.9rem);
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent);
+    transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .panel__title {
+    margin: 0;
+    font-size: clamp(1.5rem, 4.6vh, 3rem);
+    font-weight: 800;
+    line-height: 1.08;
+    letter-spacing: 0.5px;
+    text-shadow: 0 2px 18px rgba(0, 0, 0, 0.55);
+    transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .panel__title--left {
+    text-align: right;
+  }
+
+  .panel__copy {
+    grid-area: copy;
+    align-self: center;
+  }
+
+  .panel__title--right {
+    margin-bottom: clamp(1.8rem, 5.5vh, 3.2rem);
+    white-space: nowrap;
+  }
+
+  .panel__text {
+    margin: 0;
+    font-size: clamp(0.76rem, 1.85vh, 1.15rem);
+    line-height: 1.6;
+    color: var(--text-muted);
+    transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  /* Resaltados dentro del párrafo */
+  .panel__text strong {
+    color: var(--text);
+    font-weight: 700;
+  }
+
+  .panel__text strong.accent {
+    color: var(--accent);
+    font-weight: 800;
+  }
+
+  .panel__text--left {
+    grid-area: text;
+    max-width: 62%;
+    align-self: end;
+  }
+
+  .panel__product {
+    height: auto;
+    object-fit: contain;
+    filter: drop-shadow(0 30px 40px rgba(0, 0, 0, 0.55));
+    grid-area: product;
+    align-self: center;
+    transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1), filter 0.6s ease;
+  }
+
+  /* La imagen izquierda escala con la pantalla, centrada en su banda */
+  .panel__product--left {
+    justify-self: center;
+    width: auto;
+    max-width: 100%;
+    max-height: clamp(150px, 40vh, 440px);
+  }
+
+  /* La imagen derecha es grande y se pega al borde derecho, desbordando */
+  .panel__product--right {
+    justify-self: end;
+    align-self: center;
+    width: auto;
+    max-width: 122%;
+    max-height: clamp(180px, 52vh, 520px);
+    margin-right: clamp(-2rem, -5vw, -5rem);
+  }
+
+  /* ---------- Botón CTA ---------- */
+  .cta {
+    grid-area: cta;
+    justify-self: stretch;
+    width: 100%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: clamp(0.75rem, 1.8vh, 1.05rem) clamp(1.6rem, 3vw, 2.5rem);
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--text);
+    font-size: clamp(0.82rem, 1.7vh, 1rem);
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: background 0.35s ease, border-color 0.35s ease, color 0.35s ease, transform 0.2s ease;
+  }
+
+  .cta:hover {
+    background: var(--accent);
+    border-color: var(--accent);
+    transform: translateY(-2px);
+  }
+
+  /* ---------- Divisor central ---------- */
+  .divider {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 4px;
+    transform: translateX(-50%);
+    background: var(--accent);
+    z-index: 15;
+  }
+
+  .divider__star {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: clamp(30px, 5vh, 46px);
+    height: clamp(30px, 5vh, 46px);
+    transform: translate(-50%, -50%) rotate(45deg);
+    background: var(--accent);
+    clip-path: polygon(
+      50% 0%,
+      58% 42%,
+      100% 50%,
+      58% 58%,
+      50% 100%,
+      42% 58%,
+      0% 50%,
+      42% 42%
+    );
+    box-shadow: 0 0 24px rgba(242, 75, 40, 0.75);
+  }
+
+  /* ---------- Pantallas grandes: párrafos más grandes ---------- */
+  @media (min-width: 1600px) {
+    .panel__text {
+      font-size: clamp(1.05rem, 1.4vw, 1.4rem);
+      line-height: 1.65;
+    }
+  }
+
+  @media (min-width: 2200px) {
+    .panel__text {
+      font-size: clamp(1.3rem, 1.4vw, 1.7rem);
+    }
+  }
+
+  /* ---------- Responsive: pantallas anchas pero muy bajas ---------- */
+  @media (max-height: 560px) {
+    .panel__text {
+      display: none;
+    }
+
+    .panel__product--right {
+      max-height: 62vh;
+    }
+  }
+
+  /* ---------- Responsive: móvil / vertical ---------- */
+  @media (max-width: 768px) {
+    html,
+    body {
+      overflow: auto;
+    }
+
+    .landing {
+      flex-direction: column;
+      height: auto;
+      min-height: 100dvh;
+    }
+
+    .panel {
+      flex: 1 1 auto;
+      min-height: 60dvh;
+    }
+
+    .panel--left .panel__content,
+    .panel--right .panel__content {
+      grid-template-columns: 1fr;
+      grid-template-rows: auto auto auto auto;
+      grid-template-areas:
+        "title"
+        "product"
+        "text"
+        "cta";
+      justify-items: center;
+      text-align: center;
+      gap: 1.25rem;
+      padding: clamp(4.5rem, 12vh, 6rem) 1.75rem 3rem !important;
+    }
+
+    .panel--right .panel__content {
+      grid-template-areas:
+        "copy"
+        "product"
+        "cta";
+    }
+
+    .panel__heading--left {
+      grid-area: title;
+      justify-self: center;
+      text-align: center;
+      max-width: 100%;
+    }
+
+    .panel__eyebrow {
+      text-align: center;
+    }
+
+    .panel__title,
+    .panel__title--left {
+      justify-self: center;
+      text-align: center;
+      max-width: 100%;
+      font-size: clamp(1.8rem, 7vw, 2.6rem);
+      white-space: normal;
+    }
+
+    .panel__copy {
+      grid-area: copy;
+      max-width: 100%;
+      text-align: center;
+    }
+
+    .panel__text,
+    .panel__text--left {
+      display: block;
+      grid-area: text;
+      max-width: 90%;
+      font-size: 0.9rem;
+    }
+
+    .panel__product,
+    .panel__product--left,
+    .panel__product--right {
+      justify-self: center;
+      align-self: center;
+      max-width: 82%;
+      max-height: 34vh;
+      margin: 0;
+    }
+
+    .divider {
+      top: 50%;
+      bottom: auto;
+      left: 0;
+      right: 0;
+      width: 100%;
+      height: 4px;
+      transform: translateY(-50%);
+    }
+  }
+
+  /* ---------- Cursor personalizado ---------- */
+  /* Ocultamos el cursor nativo solo en dispositivos con puntero fino (ratón) */
+  @media (hover: hover) and (pointer: fine) {
+    .landing,
+    .landing * {
+      cursor: none;
+    }
+
+    .cursor {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 9999;
+      pointer-events: none;
+      /* La posición la mueve JS vía --x / --y */
+      transform: translate3d(var(--x, -100px), var(--y, -100px), 0);
+      will-change: transform;
+    }
+
+    .cursor__ring,
+    .cursor__dot {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      border-radius: 50%;
+    }
+
+    /* Anillo exterior (la "honda"): sigue al puntero con ligero retraso */
+    .cursor__ring {
+      width: 42px;
+      height: 42px;
+      margin: -21px 0 0 -21px;
+      border: 2px solid var(--cursor-color, #ffffff);
+      background: color-mix(in srgb, var(--cursor-color, #ffffff) 10%, transparent);
+      transition:
+        width 0.25s ease,
+        height 0.25s ease,
+        margin 0.25s ease,
+        border-color 0.3s ease,
+        background-color 0.3s ease,
+        opacity 0.2s ease;
+    }
+
+    /* Punto central: sigue al puntero al instante */
+    .cursor__dot {
+      width: 6px;
+      height: 6px;
+      margin: -3px 0 0 -3px;
+      /* Compensa el retraso del anillo para pegarse al ratón */
+      translate: var(--dot-x, 0px) var(--dot-y, 0px);
+      background: var(--cursor-color, #ffffff);
+      transition: background-color 0.3s ease, scale 0.2s ease;
+    }
+
+    /* Cambio ligero según la sección */
+    .cursor--left {
+      --cursor-color: #ffffff;
+    }
+
+    .cursor--right {
+      --cursor-color: var(--accent);
+    }
+
+    .cursor--right .cursor__ring {
+      width: 52px;
+      height: 52px;
+      margin: -26px 0 0 -26px;
+    }
+
+    /* Al pasar sobre elementos interactivos, el anillo se agranda */
+    .cursor--hover .cursor__ring {
+      width: 64px;
+      height: 64px;
+      margin: -32px 0 0 -32px;
+      background: color-mix(in srgb, var(--cursor-color, #ffffff) 22%, transparent);
+    }
+
+    .cursor--hover .cursor__dot {
+      scale: 0.4;
+    }
+
+    /* Ocultar cuando el puntero sale de la ventana */
+    .cursor--hidden {
+      opacity: 0;
+    }
+  }
+
+  /* En táctiles no mostramos el cursor personalizado */
+  .cursor {
+    display: none;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .cursor {
+      display: block;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cursor__ring,
+    .panel,
+    .panel__bg,
+    .panel__product,
+    .panel__title,
+    .panel__text,
+    .panel__overlay {
+      transition: none;
+    }
+  }
+
+  /* ---------- Modal de selección de región ---------- */
+  .modal {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: clamp(1rem, 3vh, 2rem);
+  }
+
+  .modal[hidden] {
+    display: none;
+  }
+
+  .modal__overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(5, 7, 11, 0.7);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .modal__dialog {
+    position: relative;
+    z-index: 1;
+    width: min(960px, 100%);
+    max-height: 90vh;
+    overflow: auto;
+    padding: clamp(1.5rem, 4vh, 2.75rem);
+    background: #0f141b;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 20px;
+    box-shadow: 0 40px 90px rgba(0, 0, 0, 0.6);
+    color: var(--text);
+    opacity: 0;
+    transform: translateY(16px) scale(0.98);
+    transition: opacity 0.35s ease, transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .modal.is-open .modal__overlay {
+    opacity: 1;
+  }
+
+  .modal.is-open .modal__dialog {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  .modal__close {
+    position: absolute;
+    top: 1rem;
+    right: 1.15rem;
+    width: 38px;
+    height: 38px;
+    border: none;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+    font-size: 1.4rem;
+    line-height: 1;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.2s ease;
+  }
+
+  .modal__close:hover {
+    background: var(--accent);
+    transform: rotate(90deg);
+  }
+
+  .modal__eyebrow {
+    margin: 0 0 0.4rem;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .modal__title {
+    margin: 0 0 0.35rem;
+    font-size: clamp(1.5rem, 3vw, 2.1rem);
+    font-weight: 800;
+  }
+
+  .modal__subtitle {
+    margin: 0 0 1.5rem;
+    font-size: 0.95rem;
+    color: var(--text-muted);
+  }
+
+  .modal__body {
+    display: grid;
+    grid-template-columns: 1.35fr 1fr;
+    gap: clamp(1rem, 3vw, 2rem);
+    align-items: center;
+  }
+
+  /* Mapa (jsVectorMap) */
+  .modal__map {
+    position: relative;
+    background: radial-gradient(circle at 50% 40%, #16202b, #0c1118);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 14px;
+    padding: 0.75rem;
+  }
+
+  .worldmap {
+    width: 100%;
+    height: clamp(240px, 40vh, 360px);
+  }
+
+  /* Ajustes de tema para jsVectorMap dentro del modal */
+  .modal__map :global(.jvm-tooltip) {
+    background: var(--accent);
+    border: none;
+    border-radius: 6px;
+    font-family: inherit;
+    font-weight: 600;
+    padding: 4px 9px;
+  }
+
+  .modal__map :global(.jvm-zoom-btn) {
+    background: rgba(255, 255, 255, 0.12);
+    border-radius: 6px;
+    color: #fff;
+  }
+
+  /* Encabezado de la lista (título + back) */
+  .list-head {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 0.85rem;
+    min-height: 30px;
+  }
+
+  .list-head__title {
+    margin: 0;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  .list-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.35rem 0.7rem;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease, border-color 0.2s ease;
+  }
+
+  .list-back[hidden] {
+    display: none;
+  }
+
+  .list-back:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--accent);
+  }
+
+  /* Lista de regiones / países */
+  .region-list {
+    list-style: none;
+    margin: 0 0 1.25rem;
+    padding: 0.15rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    max-height: clamp(180px, 30vh, 280px);
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  .region-list::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .region-list::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 3px;
+  }
+
+  /* Los items se generan por JS (innerHTML), por eso van como :global */
+  .region-list :global(li) {
+    margin: 0;
+    list-style: none;
+  }
+
+  .region-list :global(.region-item) {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.7rem 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.03);
+    color: #ffffff;
+    font-family: inherit;
+    font-size: 0.92rem;
+    font-weight: 600;
+    line-height: 1.2;
+    text-align: left;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    cursor: pointer;
+    transition: background 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
+  }
+
+  .region-list :global(.region-item:hover) {
+    background: rgba(242, 75, 40, 0.18);
+    border-color: rgba(242, 75, 40, 0.6);
+    padding-left: 1.25rem;
+  }
+
+  .region-list :global(.region-item.is-selected) {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+
+  .modal__footer {
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    padding-top: 1.1rem;
+  }
+
+  .modal__picked {
+    margin: 0 0 0.9rem;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+  }
+
+  .modal__picked-value {
+    display: block;
+    margin-top: 0.15rem;
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: #fff;
+  }
+
+  .modal__cta {
+    width: 100%;
+    opacity: 0.45;
+    pointer-events: none;
+    transition: opacity 0.3s ease, background 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+  }
+
+  .modal__cta.is-ready {
+    opacity: 1;
+    pointer-events: auto;
+    background: #fff;
+    border-color: #fff;
+    color: #12161c;
+  }
+
+  .modal__cta.is-ready:hover {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+
+  @media (max-width: 760px) {
+    .modal__body {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .modal__pin {
+      animation: none;
+    }
+  }
+</style>
+
+<script is:inline>
+  // Ajuste fino del alto real en navegadores sin soporte de dvh
+  const setVh = () => {
+    document.documentElement.style.setProperty("--vh", `${window.innerHeight * 0.01}px`);
+  };
+  setVh();
+  window.addEventListener("resize", setVh);
+  window.addEventListener("orientationchange", setVh);
+
+  // ---------- Cursor personalizado (círculo + honda) ----------
+  (() => {
+    const finePointer = window.matchMedia("(hover: hover) and (pointer: fine)");
+    const cursor = document.querySelector(".cursor");
+    if (!cursor || !finePointer.matches) return;
+
+    const dot = cursor.querySelector(".cursor__dot");
+
+    // Posición objetivo (ratón) y posición suavizada del conjunto (honda)
+    let targetX = window.innerWidth / 2;
+    let targetY = window.innerHeight / 2;
+    let ringX = targetX;
+    let ringY = targetY;
+    // El punto sigue al ratón sin retraso
+    let dotX = targetX;
+    let dotY = targetY;
+
+    const setSection = () => {
+      const isRight = targetX > window.innerWidth / 2;
+      cursor.classList.toggle("cursor--right", isRight);
+      cursor.classList.toggle("cursor--left", !isRight);
+    };
+
+    document.addEventListener("mousemove", (e) => {
+      targetX = e.clientX;
+      targetY = e.clientY;
+      dotX = e.clientX;
+      dotY = e.clientY;
+      cursor.classList.remove("cursor--hidden");
+      setSection();
+    });
+
+    document.addEventListener("mouseleave", () => cursor.classList.add("cursor--hidden"));
+    document.addEventListener("mouseenter", () => cursor.classList.remove("cursor--hidden"));
+
+    // Estado hover sobre elementos interactivos
+    const interactive = document.querySelectorAll("a, button, .cta, .pill");
+    interactive.forEach((el) => {
+      el.addEventListener("mouseenter", () => cursor.classList.add("cursor--hover"));
+      el.addEventListener("mouseleave", () => cursor.classList.remove("cursor--hover"));
+    });
+
+    // Bucle de animación: el conjunto se mueve con retraso (efecto honda),
+    // el punto se coloca en la posición exacta del ratón compensando el retraso.
+    const render = () => {
+      ringX += (targetX - ringX) * 0.18;
+      ringY += (targetY - ringY) * 0.18;
+      cursor.style.setProperty("--x", `${ringX}px`);
+      cursor.style.setProperty("--y", `${ringY}px`);
+      // El punto compensa el retraso del contenedor para pegarse al ratón
+      dot.style.setProperty("--dot-x", `${dotX - ringX}px`);
+      dot.style.setProperty("--dot-y", `${dotY - ringY}px`);
+      requestAnimationFrame(render);
+    };
+    setSection();
+    requestAnimationFrame(render);
+  })();
+
+  // ---------- Estado activo / inactivo de las secciones ----------
+  (() => {
+    const panels = Array.from(document.querySelectorAll(".panel"));
+    if (panels.length < 2) return;
+
+    const activate = (activePanel) => {
+      panels.forEach((p) => {
+        const isActive = p === activePanel;
+        p.classList.toggle("is-active", isActive);
+        p.classList.toggle("is-inactive", !isActive);
+      });
+    };
+
+    const reset = () => {
+      panels.forEach((p) => p.classList.remove("is-active", "is-inactive"));
+    };
+
+    panels.forEach((panel) => {
+      panel.addEventListener("mouseenter", () => activate(panel));
+    });
+
+    // Al salir del área de paneles, volver al estado neutro
+    const landing = document.querySelector(".landing");
+    if (landing) landing.addEventListener("mouseleave", reset);
+  })();
+
+  // ---------- Menús desplegables (Enlaces + Idioma) ----------
+  (() => {
+    const menus = Array.from(document.querySelectorAll(".menu"));
+
+    const closeAll = (except) => {
+      menus.forEach((m) => {
+        if (m === except) return;
+        m.dataset.open = "false";
+        m.querySelector("[data-menu-toggle]")?.setAttribute("aria-expanded", "false");
+      });
+    };
+
+    menus.forEach((menu) => {
+      const toggle = menu.querySelector("[data-menu-toggle]");
+      if (!toggle) return;
+      toggle.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const willOpen = menu.dataset.open !== "true";
+        closeAll(menu);
+        menu.dataset.open = willOpen ? "true" : "false";
+        toggle.setAttribute("aria-expanded", String(willOpen));
+      });
+    });
+
+    // Cerrar al hacer clic fuera o con Escape
+    document.addEventListener("click", () => closeAll(null));
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") closeAll(null);
+    });
+  })();
+
+  // ---------- Cambio de idioma ----------
+  (() => {
+    const dict = /* @__PURE__ */ JSON.parse(document.getElementById("i18n-data")?.textContent || "{}");
+    if (!dict.es) return;
+
+    const getByPath = (obj, path) =>
+      path.split(".").reduce((acc, key) => (acc == null ? acc : acc[key]), obj);
+
+    const applyLang = (lang) => {
+      const data = dict[lang] || dict.es;
+
+      // Texto plano
+      document.querySelectorAll("[data-i18n]").forEach((el) => {
+        const val = getByPath(data, el.getAttribute("data-i18n"));
+        if (typeof val === "string") el.textContent = val;
+      });
+
+      // Texto con HTML (párrafos con <strong>)
+      document.querySelectorAll("[data-i18n-html]").forEach((el) => {
+        const val = getByPath(data, el.getAttribute("data-i18n-html"));
+        if (typeof val === "string") el.innerHTML = val;
+      });
+
+      // Etiqueta del selector y lista de enlaces
+      const langLabel = document.querySelector("[data-lang-label]");
+      if (langLabel) langLabel.textContent = data.langLabel;
+
+      const linksList = document.querySelector("[data-links-list]");
+      if (linksList && Array.isArray(data.linksItems)) {
+        linksList.innerHTML = data.linksItems
+          .map((it) => `<li role="none"><a role="menuitem" href="${it.href}">${it.label}</a></li>`)
+          .join("");
+      }
+
+      // Marcar opción activa y actualizar <html lang>
+      document.querySelectorAll(".lang-option").forEach((opt) => {
+        opt.setAttribute("aria-current", String(opt.getAttribute("data-lang") === lang));
+      });
+      document.documentElement.lang = lang;
+
+      try {
+        localStorage.setItem("thermoliner-lang", lang);
+      } catch (_) {}
+
+      // Avisar a otros módulos (p. ej. el modal) del cambio de idioma
+      document.dispatchEvent(new CustomEvent("thermoliner:lang", { detail: { lang } }));
+      window.__thermolinerLang = lang;
+    };
+
+    // Listeners de las opciones de idioma
+    document.querySelectorAll(".lang-option").forEach((opt) => {
+      opt.addEventListener("click", () => applyLang(opt.getAttribute("data-lang")));
+    });
+
+    // Idioma inicial: preferencia guardada o navegador
+    let initial = "es";
+    try {
+      const saved = localStorage.getItem("thermoliner-lang");
+      if (saved && dict[saved]) initial = saved;
+      else if ((navigator.language || "").toLowerCase().startsWith("en")) initial = "en";
+    } catch (_) {}
+
+    // Solo re-renderizamos si el idioma inicial NO es el ya servido (es).
+    if (initial !== "es") {
+      applyLang(initial);
+    } else {
+      // Marca la opción ES como activa sin tocar el DOM ya renderizado.
+      document.querySelectorAll(".lang-option").forEach((opt) => {
+        opt.setAttribute("aria-current", String(opt.getAttribute("data-lang") === "es"));
+      });
+      window.__thermolinerLang = "es";
+    }
+  })();
+
+  // ---------- Modal de selección de región (jsVectorMap) ----------
+  (() => {
+    const dict = /* @__PURE__ */ JSON.parse(document.getElementById("i18n-data")?.textContent || "{}");
+    const modal = document.querySelector("[data-modal]");
+    if (!modal || !dict.es) return;
+
+    const titleEl = modal.querySelector("[data-modal-title]");
+    const pickedLabel = modal.querySelector(".modal__picked-label");
+    const pickedValue = modal.querySelector("[data-picked-value]");
+    const goBtn = modal.querySelector("[data-modal-go]");
+    const mapEl = modal.querySelector("[data-worldmap]");
+    const listEl = modal.querySelector("[data-select-list]");
+    const listTitle = modal.querySelector("[data-list-title]");
+    const backBtn = modal.querySelector("[data-list-back]");
+
+    // Solo 3 regiones. Cada país: code ISO-2 + nombre ES/EN
+    const REGIONS = {
+      na: [
+        { code: "US", es: "Estados Unidos", en: "United States" },
+        { code: "CA", es: "Canadá", en: "Canada" },
+        { code: "MX", es: "México", en: "Mexico" },
+      ],
+      latam: [
+        { code: "BR", es: "Brasil", en: "Brazil" },
+        { code: "AR", es: "Argentina", en: "Argentina" },
+        { code: "CL", es: "Chile", en: "Chile" },
+        { code: "CO", es: "Colombia", en: "Colombia" },
+        { code: "PE", es: "Perú", en: "Peru" },
+        { code: "EC", es: "Ecuador", en: "Ecuador" },
+        { code: "VE", es: "Venezuela", en: "Venezuela" },
+        { code: "BO", es: "Bolivia", en: "Bolivia" },
+        { code: "PY", es: "Paraguay", en: "Paraguay" },
+        { code: "UY", es: "Uruguay", en: "Uruguay" },
+        { code: "CR", es: "Costa Rica", en: "Costa Rica" },
+        { code: "PA", es: "Panamá", en: "Panama" },
+        { code: "GT", es: "Guatemala", en: "Guatemala" },
+        { code: "DO", es: "Rep. Dominicana", en: "Dominican Rep." },
+      ],
+      eu: [
+        { code: "ES", es: "España", en: "Spain" },
+        { code: "PT", es: "Portugal", en: "Portugal" },
+        { code: "FR", es: "Francia", en: "France" },
+        { code: "GB", es: "Reino Unido", en: "United Kingdom" },
+        { code: "IE", es: "Irlanda", en: "Ireland" },
+        { code: "DE", es: "Alemania", en: "Germany" },
+        { code: "IT", es: "Italia", en: "Italy" },
+        { code: "NL", es: "Países Bajos", en: "Netherlands" },
+        { code: "BE", es: "Bélgica", en: "Belgium" },
+        { code: "CH", es: "Suiza", en: "Switzerland" },
+        { code: "AT", es: "Austria", en: "Austria" },
+        { code: "PL", es: "Polonia", en: "Poland" },
+        { code: "SE", es: "Suecia", en: "Sweden" },
+        { code: "NO", es: "Noruega", en: "Norway" },
+        { code: "DK", es: "Dinamarca", en: "Denmark" },
+        { code: "FI", es: "Finlandia", en: "Finland" },
+      ],
+    };
+
+    // País -> región (para clic directo en el mapa)
+    const COUNTRY_TO_REGION = {};
+    Object.entries(REGIONS).forEach(([region, countries]) => {
+      countries.forEach((c) => (COUNTRY_TO_REGION[c.code] = region));
+    });
+
+    const STORE_LINKS = {
+      moto: { base: "/tienda/moto" },
+      util: { base: "/tienda/utilitario" },
+    };
+
+    let currentStore = "moto";
+    let view = "regions"; // "regions" | "countries"
+    let activeRegion = null;
+    let selectedCountry = null; // { code, region }
+    let map = null;
+
+    const lang = () => (window.__thermolinerLang && dict[window.__thermolinerLang] ? window.__thermolinerLang : "es");
+    const tt = () => dict[lang()].modal;
+    const countryName = (c) => (lang() === "en" ? c.en : c.es);
+
+    const findCountry = (code) => {
+      for (const list of Object.values(REGIONS)) {
+        const found = list.find((c) => c.code === code);
+        if (found) return found;
+      }
+      return null;
+    };
+
+    // ----- Pintado del mapa -----
+    const FILL_ON = "#f24b28"; // naranja de acento
+    const FILL_OFF = "#38424f"; // gris base (igual que regionStyle.initial)
+
+    // Todos los códigos que manejamos, para poder resetearlos explícitamente
+    const ALL_CODES = Object.values(REGIONS).flat().map((c) => c.code);
+
+    // Colorea con hex directo: encendidos en naranja, el resto en gris base.
+    const applyPaint = (onCodes) => {
+      if (!map || !map.series || !map.series.regions || !map.series.regions[0]) return;
+      const on = new Set(onCodes);
+      const values = {};
+      ALL_CODES.forEach((code) => (values[code] = on.has(code) ? FILL_ON : FILL_OFF));
+      try {
+        map.series.regions[0].setValues(values);
+      } catch (err) {
+        console.warn("map paint failed", err);
+      }
+    };
+
+    const clearPaint = () => applyPaint([]);
+
+    const paintRegion = (region) => {
+      applyPaint((REGIONS[region] || []).map((c) => c.code));
+    };
+
+    const paintCountry = (code) => {
+      applyPaint([code]);
+    };
+
+    // ----- Renderizado de la lista -----
+    const renderRegions = () => {
+      const m = tt();
+      view = "regions";
+      backBtn.hidden = true;
+      listTitle.textContent = m.selectRegion;
+      listEl.innerHTML = Object.keys(REGIONS)
+        .map(
+          (r) =>
+            `<li><button type="button" class="region-item${activeRegion === r ? " is-selected" : ""}" role="option" data-region="${r}">${m.regions[r] || r}</button></li>`
+        )
+        .join("");
+      listEl.querySelectorAll("[data-region]").forEach((btn) => {
+        btn.addEventListener("click", () => enterRegion(btn.getAttribute("data-region")));
+        btn.addEventListener("mouseenter", () => paintRegion(btn.getAttribute("data-region")));
+      });
+    };
+
+    const renderCountries = (region) => {
+      const m = tt();
+      view = "countries";
+      activeRegion = region;
+      backBtn.hidden = false;
+      backBtn.querySelector("[data-back-label]").textContent = m.back;
+      listTitle.textContent = m.selectCountry + " · " + (m.regions[region] || region);
+      listEl.innerHTML = (REGIONS[region] || [])
+        .map(
+          (c) =>
+            `<li><button type="button" class="region-item${selectedCountry && selectedCountry.code === c.code ? " is-selected" : ""}" role="option" data-code="${c.code}">${countryName(c)}</button></li>`
+        )
+        .join("");
+      listEl.querySelectorAll("[data-code]").forEach((btn) => {
+        const code = btn.getAttribute("data-code");
+        btn.addEventListener("click", () => selectCountry(code));
+        btn.addEventListener("mouseenter", () => paintCountry(code));
+      });
+    };
+
+    const restorePaint = () => {
+      if (selectedCountry) paintCountry(selectedCountry.code);
+      else if (view === "countries" && activeRegion) paintRegion(activeRegion);
+      else clearPaint();
+    };
+
+    // ----- Acciones -----
+    const enterRegion = (region) => {
+      activeRegion = region;
+      renderCountries(region); // primero la UI, para no depender del mapa
+      paintRegion(region);
+    };
+
+    const goBack = () => {
+      selectedCountry = null;
+      updatePicked();
+      goBtn.classList.remove("is-ready");
+      goBtn.setAttribute("aria-disabled", "true");
+      goBtn.removeAttribute("href");
+      renderRegions();
+      clearPaint();
+    };
+
+    const selectCountry = (code) => {
+      const region = COUNTRY_TO_REGION[code];
+      selectedCountry = { code, region };
+      // Marca visualmente en la lista de países
+      listEl.querySelectorAll("[data-code]").forEach((b) => {
+        b.classList.toggle("is-selected", b.getAttribute("data-code") === code);
+      });
+      updatePicked();
+      goBtn.classList.add("is-ready");
+      goBtn.setAttribute("aria-disabled", "false");
+      goBtn.href = `${STORE_LINKS[currentStore].base}?region=${region}&country=${code}`;
+      paintCountry(code); // pintado al final: no debe bloquear la selección
+    };
+
+    const updatePicked = () => {
+      const m = tt();
+      if (selectedCountry) {
+        const c = findCountry(selectedCountry.code);
+        pickedLabel.textContent = m.selected;
+        pickedValue.textContent = c ? countryName(c) : selectedCountry.code;
+      } else {
+        pickedLabel.textContent = m.none;
+        pickedValue.textContent = "";
+      }
+    };
+
+    // Clic en el mapa: si estamos en regiones, entra a la región del país;
+    // si ya estamos en países de esa región, selecciona el país.
+    const onMapClick = (code) => {
+      const region = COUNTRY_TO_REGION[code];
+      if (!region) return;
+      if (view === "regions") {
+        enterRegion(region);
+      } else if (view === "countries") {
+        if (region === activeRegion) selectCountry(code);
+        else enterRegion(region);
+      }
+    };
+
+    const refreshLabels = () => {
+      const m = tt();
+      titleEl.textContent = currentStore === "util" ? m.titleUtil : m.titleMoto;
+      goBtn.querySelector("[data-i18n='modal.cta']").textContent = m.cta;
+      updatePicked();
+      if (view === "countries" && activeRegion) renderCountries(activeRegion);
+      else renderRegions();
+    };
+
+    const initMap = () => {
+      if (map || typeof window.jsVectorMap !== "function") return;
+      map = new window.jsVectorMap({
+        selector: mapEl,
+        map: "world",
+        zoomButtons: false,
+        backgroundColor: "transparent",
+        regionStyle: {
+          initial: { fill: "#38424f", stroke: "#0f141b", strokeWidth: 0.4 },
+          hover: { fill: "#f2854a" },
+        },
+        series: {
+          regions: [
+            {
+              attribute: "fill",
+              values: {},
+            },
+          ],
+        },
+        onRegionClick: (event, code) => onMapClick(code),
+      });
+    };
+
+    const open = (store) => {
+      currentStore = store;
+      view = "regions";
+      activeRegion = null;
+      selectedCountry = null;
+      goBtn.classList.remove("is-ready");
+      goBtn.setAttribute("aria-disabled", "true");
+      goBtn.removeAttribute("href");
+      refreshLabels();
+
+      modal.hidden = false;
+      modal.setAttribute("aria-hidden", "false");
+      requestAnimationFrame(() => {
+        modal.classList.add("is-open");
+        setTimeout(() => {
+          initMap();
+          if (map) {
+            clearPaint();
+            map.updateSize();
+          }
+        }, 60);
+      });
+      document.body.style.overflow = "hidden";
+    };
+
+    const close = () => {
+      modal.classList.remove("is-open");
+      modal.setAttribute("aria-hidden", "true");
+      document.body.style.overflow = "";
+      setTimeout(() => (modal.hidden = true), 320);
+    };
+
+    document.querySelectorAll("[data-open-store]").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        e.preventDefault();
+        open(btn.getAttribute("data-open-store"));
+      });
+    });
+
+    backBtn.addEventListener("click", goBack);
+
+    // Al salir de la lista, restaurar el pintado según el estado actual
+    listEl.addEventListener("mouseleave", restorePaint);
+
+    modal.querySelectorAll("[data-modal-close]").forEach((el) => el.addEventListener("click", close));
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && !modal.hidden) close();
+    });
+
+    window.addEventListener("resize", () => {
+      if (map && !modal.hidden) map.updateSize();
+    });
+
+    document.addEventListener("thermoliner:lang", refreshLabels);
+  })();
+</script>
