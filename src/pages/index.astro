@@ -736,37 +736,46 @@ const t = i18n.es;
 
   /* ---------- Responsive: móvil / vertical ---------- */
   @media (max-width: 768px) {
+    /* Sin scroll: la landing ocupa exactamente el alto del viewport */
     html,
     body {
-      overflow: auto;
+      overflow: hidden;
     }
 
     .landing {
       flex-direction: column;
-      height: auto;
-      min-height: 100dvh;
+      height: 100vh;
+      height: calc(var(--vh, 1vh) * 100);
+      height: 100dvh;
     }
 
-    .panel {
-      flex: 1 1 auto;
-      min-height: 60dvh;
+    /* Dos paneles apilados, cada uno la mitad del alto */
+    .panel,
+    .panel.is-active,
+    .panel.is-inactive {
+      flex: 1 1 50%;
+      flex-grow: 1;
+      min-height: 0;
+      height: 50dvh;
     }
 
+    /* Contenido compacto y centrado dentro de cada medio alto */
     .panel--left .panel__content,
     .panel--right .panel__content {
       grid-template-columns: 1fr;
-      grid-template-rows: auto auto auto auto;
+      grid-template-rows: auto 1fr auto;
       grid-template-areas:
         "title"
         "product"
-        "text"
         "cta";
       justify-items: center;
+      align-content: center;
       text-align: center;
-      gap: 1.25rem;
-      padding: clamp(4.5rem, 12vh, 6rem) 1.75rem 3rem !important;
+      row-gap: clamp(0.4rem, 1.4vh, 0.9rem);
+      padding: clamp(3.2rem, 9vh, 4.5rem) 1.25rem clamp(0.8rem, 2.5vh, 1.4rem) !important;
     }
 
+    /* El panel derecho no tiene wrapper copy en móvil: usamos las mismas áreas */
     .panel--right .panel__content {
       grid-template-areas:
         "copy"
@@ -781,43 +790,61 @@ const t = i18n.es;
       max-width: 100%;
     }
 
-    .panel__eyebrow {
-      text-align: center;
-    }
-
-    .panel__title,
-    .panel__title--left {
-      justify-self: center;
-      text-align: center;
-      max-width: 100%;
-      font-size: clamp(1.8rem, 7vw, 2.6rem);
-      white-space: normal;
-    }
-
     .panel__copy {
       grid-area: copy;
       max-width: 100%;
       text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
 
+    .panel__eyebrow {
+      margin-bottom: 0.25rem;
+      font-size: clamp(0.6rem, 1.6vw, 0.72rem);
+      text-align: center;
+    }
+
+    .panel__title,
+    .panel__title--left,
+    .panel__title--right {
+      justify-self: center;
+      text-align: center;
+      max-width: 100%;
+      margin: 0;
+      font-size: clamp(1.35rem, 5.6vw, 2rem);
+      white-space: normal;
+    }
+
+    /* Ocultamos el párrafo largo en móvil para que todo quepa sin scroll */
     .panel__text,
-    .panel__text--left {
-      display: block;
-      grid-area: text;
-      max-width: 90%;
-      font-size: 0.9rem;
+    .panel__text--left,
+    .panel__text--right {
+      display: none;
     }
 
+    /* La imagen manda con el alto disponible del medio panel */
     .panel__product,
     .panel__product--left,
     .panel__product--right {
+      grid-area: product;
       justify-self: center;
       align-self: center;
-      max-width: 82%;
-      max-height: 34vh;
+      width: auto;
+      max-width: 78%;
+      max-height: 22vh;
       margin: 0;
     }
 
+    .cta {
+      grid-area: cta;
+      justify-self: center;
+      width: min(100%, 320px);
+      padding: clamp(0.6rem, 1.6vh, 0.85rem) 1.5rem;
+      font-size: clamp(0.72rem, 1.6vh, 0.85rem);
+    }
+
+    /* Divisor horizontal en el centro */
     .divider {
       top: 50%;
       bottom: auto;
@@ -826,6 +853,38 @@ const t = i18n.es;
       width: 100%;
       height: 4px;
       transform: translateY(-50%);
+    }
+
+    /* Header más compacto */
+    .topbar {
+      padding: 0.9rem 1.1rem;
+    }
+
+    /* Modal: ocupa mejor la pantalla en móvil */
+    .modal__dialog {
+      max-height: 88dvh;
+    }
+
+    .worldmap {
+      height: clamp(180px, 26vh, 240px);
+    }
+  }
+
+  /* Móvil muy bajo (landscape de teléfono): recuperar scroll para no romper */
+  @media (max-width: 768px) and (max-height: 480px) {
+    html,
+    body {
+      overflow: auto;
+    }
+
+    .landing {
+      height: auto;
+      min-height: 100dvh;
+    }
+
+    .panel {
+      height: auto;
+      min-height: 60dvh;
     }
   }
 
@@ -1489,8 +1548,8 @@ const t = i18n.es;
     });
 
     const STORE_LINKS = {
-      moto: { base: "/tienda/moto" },
-      util: { base: "/tienda/utilitario" },
+      moto: { base: "https://thermolinerseats.com/es/" },
+      util: { base: "https://thermolinerseats.com/en/" },
     };
 
     let currentStore = "moto";
@@ -1518,17 +1577,20 @@ const t = i18n.es;
     // Todos los códigos que manejamos, para poder resetearlos explícitamente
     const ALL_CODES = Object.values(REGIONS).flat().map((c) => c.code);
 
-    // Colorea con hex directo: encendidos en naranja, el resto en gris base.
+    // Colorea con hex directo por región usando la API de estilos de cada
+    // shape: map.regions[code].element.setStyle('fill', color)
     const applyPaint = (onCodes) => {
-      if (!map || !map.series || !map.series.regions || !map.series.regions[0]) return;
+      if (!map || !map.regions) return;
       const on = new Set(onCodes);
-      const values = {};
-      ALL_CODES.forEach((code) => (values[code] = on.has(code) ? FILL_ON : FILL_OFF));
-      try {
-        map.series.regions[0].setValues(values);
-      } catch (err) {
-        console.warn("map paint failed", err);
-      }
+      ALL_CODES.forEach((code) => {
+        const region = map.regions[code];
+        if (!region || !region.element) return;
+        try {
+          region.element.setStyle("fill", on.has(code) ? FILL_ON : FILL_OFF);
+        } catch (err) {
+          /* región inexistente en el dataset del mapa */
+        }
+      });
     };
 
     const clearPaint = () => applyPaint([]);
@@ -1613,6 +1675,8 @@ const t = i18n.es;
       goBtn.classList.add("is-ready");
       goBtn.setAttribute("aria-disabled", "false");
       goBtn.href = `${STORE_LINKS[currentStore].base}?region=${region}&country=${code}`;
+      goBtn.target = "_blank";
+      goBtn.rel = "noopener noreferrer";
       paintCountry(code); // pintado al final: no debe bloquear la selección
     };
 
