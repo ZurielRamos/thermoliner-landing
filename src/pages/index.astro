@@ -5,6 +5,8 @@ import asiento1 from "../assets/asiento_1.png";
 import asiento2 from "../assets/asiento_2.png";
 import background1 from "../assets/background_1.png";
 import background2 from "../assets/background_2.png";
+import favicon from "../assets/ico.webp";
+import ogImage from "../assets/og.png";
 
 // Diccionario de traducciones (se sirve al cliente para el cambio de idioma)
 const i18n = {
@@ -94,16 +96,35 @@ const i18n = {
 
 // Idioma por defecto para el render inicial (SSG)
 const t = i18n.es;
+
+// Metadatos SEO / social
+const siteTitle = "Thermoliner Seats";
+const siteDescription =
+  "Asientos para motos y vehículos utilitarios con tecnología Thermoliner, que reduce la temperatura de la superficie hasta un 30%. Más confort en cada trayecto, incluso bajo el sol.";
+// URL absoluta de la imagen OG (usa Astro.site si está configurado)
+const ogImageUrl = new URL(ogImage.src, Astro.site ?? Astro.url).href;
 ---
 
 <html lang="es">
   <head>
     <meta charset="utf-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="icon" href="/favicon.ico" />
+    <link rel="icon" type="image/webp" href={favicon.src} />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="generator" content={Astro.generator} />
-    <title>Thermoliner Seats</title>
+    <title>{siteTitle}</title>
+    <meta name="description" content={siteDescription} />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={siteTitle} />
+    <meta property="og:description" content={siteDescription} />
+    <meta property="og:image" content={ogImageUrl} />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={siteTitle} />
+    <meta name="twitter:description" content={siteDescription} />
+    <meta name="twitter:image" content={ogImageUrl} />
     <!-- jsVectorMap: mapa mundial interactivo -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jsvectormap@1.7.0/dist/jsvectormap.min.css" />
     <script is:inline src="https://cdn.jsdelivr.net/npm/jsvectormap@1.7.0/dist/jsvectormap.min.js"></script>
@@ -689,24 +710,7 @@ const t = i18n.es;
   }
 
   .divider__star {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: clamp(30px, 5vh, 46px);
-    height: clamp(30px, 5vh, 46px);
-    transform: translate(-50%, -50%) rotate(45deg);
-    background: var(--accent);
-    clip-path: polygon(
-      50% 0%,
-      58% 42%,
-      100% 50%,
-      58% 58%,
-      50% 100%,
-      42% 58%,
-      0% 50%,
-      42% 42%
-    );
-    box-shadow: 0 0 24px rgba(242, 75, 40, 0.75);
+    display: none;
   }
 
   /* ---------- Pantallas grandes: párrafos más grandes ---------- */
@@ -860,13 +864,49 @@ const t = i18n.es;
       padding: 0.9rem 1.1rem;
     }
 
-    /* Modal: ocupa mejor la pantalla en móvil */
-    .modal__dialog {
-      max-height: 88dvh;
+    /* En móvil ocultamos el menú de "Otros Enlaces" */
+    .menu[data-menu="links"] {
+      display: none;
     }
 
+    /* Modal: ocupa mejor la pantalla en móvil */
+    .modal {
+      padding: 0.75rem;
+      align-items: flex-start;
+    }
+
+    .modal__dialog {
+      width: 100%;
+      max-height: 92dvh;
+      padding: 1.25rem 1.15rem 1.4rem;
+      margin-top: 0.5rem;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .modal__subtitle {
+      margin-bottom: 1rem;
+      font-size: 0.85rem;
+    }
+
+    /* En móvil el mapa es más compacto */
     .worldmap {
-      height: clamp(180px, 26vh, 240px);
+      height: clamp(150px, 22vh, 210px);
+    }
+
+    .region-list {
+      max-height: none;
+    }
+  }
+
+  /* Pantallas muy pequeñas: ocultamos el mapa y dejamos solo la selección */
+  @media (max-width: 560px) {
+    .modal__map {
+      display: none;
+    }
+
+    .modal__body {
+      grid-template-columns: 1fr;
+      gap: 0;
     }
   }
 
@@ -1716,6 +1756,8 @@ const t = i18n.es;
 
     const initMap = () => {
       if (map || typeof window.jsVectorMap !== "function") return;
+      // No inicializar si el contenedor está oculto (p. ej. móvil pequeño)
+      if (!mapEl.offsetParent && mapEl.offsetWidth === 0) return;
       map = new window.jsVectorMap({
         selector: mapEl,
         map: "world",
